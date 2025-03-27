@@ -1,5 +1,5 @@
 main:
-	g++ -S -o benchmark_memory.s -g benchmark_memory.cpp
+	g++ -g -O0 -fverbose-asm -S -o benchmark_memory.s benchmark_memory.cpp
 clean:
 	rm -f benchmark_memory.s
 	rm -f benchmark
