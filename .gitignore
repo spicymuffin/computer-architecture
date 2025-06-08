@@ -1,3 +1,5 @@
 benchmark
 benchmark_memory
 *.s
+assignment_03/datapath
+assignment_03/datapath_debug
