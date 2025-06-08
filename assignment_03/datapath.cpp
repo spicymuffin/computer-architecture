@@ -10,6 +10,17 @@
 #include <memory>
 using namespace std;
 
+#define PRINT_DISASM_INSTR_STREAM
+
+#ifdef PRINT_DISASM_INSTR_STREAM
+#include <map>
+#include <set>
+map<int, string> g_labelMap;
+#endif
+
+bool g_data_hazard_detected = false;
+bool g_control_hazard_detected = false;
+
 // Function codes or opcode values
 constexpr uint32_t ADD = 0x20;
 constexpr uint32_t SUB = 0x22;
@@ -251,6 +262,9 @@ void initInstructionCache(const std::vector<uint32_t>& instructions)
 
 void initialize(const std::vector<uint32_t>& inst)
 {
+    // reset the hazard flags for each new instruction set
+    g_data_hazard_detected = false;
+    g_control_hazard_detected = false;
     initMainMemory();
     initPipelineRegs();
     initRegs();
@@ -266,8 +280,124 @@ void printRegs()
     }
 }
 
+#ifdef PRINT_DISASM_INSTR_STREAM
+std::string formatInstruction(uint32_t hex_inst, int current_index)
+{
+    std::stringstream ss;
+
+    auto decoded = decodeInstruction(hex_inst);
+    decoded->disassemble();
+
+    if (decoded->isRFormat())
+    {
+        RInstruction* r_inst = static_cast<RInstruction*>(decoded.get());
+        if (r_inst->bits == 0)
+        {
+            ss << "nop";
+        }
+        else
+        {
+            switch (r_inst->function)
+            {
+            case ADD:
+                ss << "add  $" << r_inst->dest << ", $" << r_inst->src1 << ", $" << r_inst->src2; break;
+            case SUB:
+                ss << "sub  $" << r_inst->dest << ", $" << r_inst->src1 << ", $" << r_inst->src2; break;
+            default:
+                ss << "unknown R-type (func: 0x" << std::hex << r_inst->function << ")"; break;
+            }
+        }
+    }
+    else
+    {
+        IInstruction* i_inst = static_cast<IInstruction*>(decoded.get());
+        switch (i_inst->opcode)
+        {
+        case LB:
+            ss << "lb   $" << i_inst->src2 << ", " << i_inst->constant << "($" << i_inst->src1 << ")";
+            break;
+        case SB:
+            ss << "sb   $" << i_inst->src2 << ", " << i_inst->constant << "($" << i_inst->src1 << ")";
+            break;
+        case BEQ: {
+            int target_index = current_index + 1 + i_inst->constant;
+            ss << "beq  $" << i_inst->src1 << ", $" << i_inst->src2 << ", ";
+            // use the label if it exists, otherwise fall back to the raw offset
+            if (g_labelMap.count(target_index))
+            {
+                ss << g_labelMap[target_index];
+            }
+            else
+            {
+                ss << i_inst->constant; // raw offset
+            }
+            break;
+        }
+        default:
+            ss << "unknown I-type (op: 0x" << std::hex << i_inst->opcode << ")";
+            break;
+        }
+    }
+    return ss.str();
+}
+
+void discoverLabels(const vector<uint32_t>& instructions)
+{
+    g_labelMap.clear(); // clear old labels for the new instruction set
+    int label_counter = 0;
+
+    for (int i = 0; i < instructions.size(); ++i)
+    {
+        uint32_t hex_inst = instructions[i];
+        uint32_t opcode = maskAndShift(opcodeMask, hex_inst);
+
+        if (opcode == BEQ)
+        {
+            // it's a branch, so calculate its target address
+            int16_t offset = static_cast<int16_t>(hex_inst & 0xFFFF);
+            int target_index = i + 1 + offset;
+
+            // if the target is valid and doesn't already have a label, assign one
+            if (target_index >= 0 && target_index < instructions.size())
+            {
+                if (g_labelMap.find(target_index) == g_labelMap.end())
+                {
+                    g_labelMap[target_index] = "L" + to_string(label_counter++);
+                }
+            }
+        }
+    }
+}
+#endif
+
 void print_init()
 {
+    #ifdef PRINT_DISASM_INSTR_STREAM
+    cout << "-----------------------------------------------------------\n";
+    cout << "INSTRUCTION STREAM\n";
+
+    // find all branch targets and create labels for them
+    discoverLabels(InstructionCache);
+
+    // print the instructions, checking for labels at each lin
+    for (int i = 0; i < InstructionCache.size(); ++i)
+    {
+        // before printing the disasm instr, check if the current instruction index is a target of a branch
+        // if so, print the label on its own line before the instruction
+        if (g_labelMap.count(i))
+        {
+            cout << g_labelMap[i] << ":" << endl;
+        }
+
+        // print the instruction in hex format
+        uint32_t hex_inst = InstructionCache[i];
+
+        // indent the instruction line for clarity
+        cout << "\t"
+            << "0x" << hex << uppercase << setw(8) << setfill('0') << hex_inst << "\t->\t"
+            << formatInstruction(hex_inst, i) << dec << endl;
+    }
+    #endif
     cout << "-----------------------------------------------------------\n";
     cout << "INITIAL REGISTER VALUES\n";
     printRegs();
@@ -276,6 +406,14 @@ void print_init()
 
 void print_final()
 {
+    if (g_data_hazard_detected)
+    {
+        cout << "[DATA HAZARD] detected.\n";
+    }
+    if (g_control_hazard_detected)
+    {
+        cout << "[CONTROL HAZARD] detected.\n";
+    }
     cout << "FINAL REGISTER VALUES\n";
     printRegs();
     cout << "===========================================================\n";
@@ -291,7 +429,6 @@ void IF_Stage()
 void ID_Stage()
 {
     // Implement here
-
 }
 
 // Execute Stage
