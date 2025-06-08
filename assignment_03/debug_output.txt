@@ -643,18 +643,44 @@ FINAL REGISTER VALUES
 Instruction Set #5
 -----------------------------------------------------------
 INSTRUCTION STREAM
-[  0] 	0x2001001D	->	addi $1, $0, 29
-[  1] 	0x2002000C	->	addi $2, $0, 12
-[  2] 	0xA0810000	->	sb   $1, 0($4)
-[  3] 	0xA0A20000	->	sb   $2, 0($5)
-[  4] 	0x80860000	->	lb   $6, 0($4)
-[  5] 	0x80A70000	->	lb   $7, 0($5)
-[  6] 	0x00C74020	->	add  $8, $6, $7
+[  0] 	0x20010003	->	addi $1, $0, 3
+[  1] 	0x20020064	->	addi $2, $0, 100
+L1:
+[  2] 	0x2021FFFF	->	addi $1, $1, -1
+[  3] 	0x20420005	->	addi $2, $2, 5
+[  4] 	0x10200001	->	beq  $1, $0, L0
+[  5] 	0x1000FFFC	->	beq  $0, $0, L1
+L0:
+[  6] 	0x00401820	->	add  $3, $2, $0
 [  7] 	0x00000000	->	nop
 [  8] 	0x00000000	->	nop
 [  9] 	0x00000000	->	nop
 [ 10] 	0x00000000	->	nop
 [ 11] 	0x00000000	->	nop
+[ 12] 	0x00000000	->	nop
+[ 13] 	0x00000000	->	nop
+[ 14] 	0x00000000	->	nop
+[ 15] 	0x00000000	->	nop
+[ 16] 	0x00000000	->	nop
+[ 17] 	0x00000000	->	nop
+[ 18] 	0x00000000	->	nop
+[ 19] 	0x00000000	->	nop
+[ 20] 	0x00000000	->	nop
+[ 21] 	0x00000000	->	nop
+[ 22] 	0x00000000	->	nop
+[ 23] 	0x00000000	->	nop
+[ 24] 	0x00000000	->	nop
+[ 25] 	0x00000000	->	nop
+[ 26] 	0x00000000	->	nop
+[ 27] 	0x00000000	->	nop
+[ 28] 	0x00000000	->	nop
+[ 29] 	0x00000000	->	nop
+[ 30] 	0x00000000	->	nop
+[ 31] 	0x00000000	->	nop
+[ 32] 	0x00000000	->	nop
+[ 33] 	0x00000000	->	nop
+[ 34] 	0x00000000	->	nop
+[ 35] 	0x00000000	->	nop
 -----------------------------------------------------------
 INITIAL REGISTER VALUES
 [$00]: 0x000
@@ -697,53 +723,158 @@ alu_input1: 0, alu_operand2: 0 (from register)
 ALUOp: 0, RFunctionBits: 0
 ALU result: 0
 ID
-addi $1, $0, 29
+addi $1, $0, 3
 EX
 alu_input1: 0, alu_operand2: 0 (from register)
 ALUOp: 0, RFunctionBits: 0
 ALU result: 0
 ID
-addi $2, $0, 12
+addi $2, $0, 100
 EX
-alu_input1: 0, alu_operand2: 29 (from immediate)
-ALUOp: 0, RFunctionBits: 29
-ALU result: 29
+alu_input1: 0, alu_operand2: 3 (from immediate)
+ALUOp: 0, RFunctionBits: 3
+ALU result: 3
 ID
-sb   $1, 0($4)
+addi $1, $1, -1
 EX
-alu_input1: 0, alu_operand2: 12 (from immediate)
-ALUOp: 0, RFunctionBits: 12
-ALU result: 12
+alu_input1: 0, alu_operand2: 100 (from immediate)
+ALUOp: 0, RFunctionBits: 36
+ALU result: 100
 ID
-sb   $2, 0($5)
+addi $2, $2, 5
 EX
-mem->ex forward: 29 from reg 1
-alu_input2 got: 29, is value from ALU
-alu_input1: 260, alu_operand2: 0 (from immediate)
+mem->ex forward: 3 from reg 1
+alu_input1 got: 3, is value from ALU
+mem->ex forward: 3 from reg 1
+alu_input2 got: 3, is value from ALU
+alu_input1: 3, alu_operand2: -1 (from immediate)
+ALUOp: 0, RFunctionBits: 63
+ALU result: 2
+ID
+beq  $1, $0, 1
+EX
+mem->ex forward: 100 from reg 2
+alu_input1 got: 100, is value from ALU
+mem->ex forward: 100 from reg 2
+alu_input2 got: 100, is value from ALU
+alu_input1: 100, alu_operand2: 5 (from immediate)
+ALUOp: 0, RFunctionBits: 5
+ALU result: 105
+ID
+beq  $0, $0, -4
+EX
+mem->ex forward: 2 from reg 1
+alu_input1 got: 2, is value from ALU
+alu_input1: 2, alu_operand2: 0 (from register)
+ALUOp: 1, RFunctionBits: 1
+ALU result: 2
+ID
+add  $3, $2, $0
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 1, RFunctionBits: 60
+ALU result: 0
+branching instruction target address: 6 (not taken)
+ID
+nop
+EX
+alu_input1: 105, alu_operand2: 0 (from register)
+ALUOp: 2, RFunctionBits: 32
+ALU result: 105
+branching instruction target address: 2 (taken)
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
 ALUOp: 0, RFunctionBits: 0
-ALU result: 260
+ALU result: 0
 ID
-lb   $6, 0($4)
+addi $1, $1, -1
 EX
-mem->ex forward: 12 from reg 2
-alu_input2 got: 12, is value from ALU
-alu_input1: 261, alu_operand2: 0 (from immediate)
+alu_input1: 0, alu_operand2: 0 (from register)
 ALUOp: 0, RFunctionBits: 0
-ALU result: 261
+ALU result: 0
 ID
-lb   $7, 0($5)
+addi $2, $2, 5
 EX
-alu_input1: 260, alu_operand2: 0 (from immediate)
-ALUOp: 0, RFunctionBits: 0
-ALU result: 260
+alu_input1: 2, alu_operand2: -1 (from immediate)
+ALUOp: 0, RFunctionBits: 63
+ALU result: 1
 ID
-add  $8, $6, $7
+beq  $1, $0, 1
 EX
-alu_input1: 261, alu_operand2: 0 (from immediate)
-ALUOp: 0, RFunctionBits: 0
-ALU result: 261
+alu_input1: 105, alu_operand2: 5 (from immediate)
+ALUOp: 0, RFunctionBits: 5
+ALU result: 110
 ID
-add  $8, $6, $7
+beq  $0, $0, -4
+EX
+mem->ex forward: 1 from reg 1
+alu_input1 got: 1, is value from ALU
+alu_input1: 1, alu_operand2: 0 (from register)
+ALUOp: 1, RFunctionBits: 1
+ALU result: 1
+ID
+add  $3, $2, $0
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 1, RFunctionBits: 60
+ALU result: 0
+branching instruction target address: 6 (not taken)
+ID
+nop
+EX
+alu_input1: 110, alu_operand2: 0 (from register)
+ALUOp: 2, RFunctionBits: 32
+ALU result: 110
+branching instruction target address: 2 (taken)
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+addi $1, $1, -1
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+addi $2, $2, 5
+EX
+alu_input1: 1, alu_operand2: -1 (from immediate)
+ALUOp: 0, RFunctionBits: 63
+ALU result: 0
+ID
+beq  $1, $0, 1
+EX
+alu_input1: 110, alu_operand2: 5 (from immediate)
+ALUOp: 0, RFunctionBits: 5
+ALU result: 115
+ID
+beq  $0, $0, -4
+EX
+mem->ex forward: 0 from reg 1
+alu_input1 got: 0, is value from ALU
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 1, RFunctionBits: 1
+ALU result: 0
+ID
+add  $3, $2, $0
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 1, RFunctionBits: 60
+ALU result: 0
+branching instruction target address: 6 (taken)
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+add  $3, $2, $0
 EX
 alu_input1: 0, alu_operand2: 0 (from register)
 ALUOp: 0, RFunctionBits: 0
@@ -751,11 +882,63 @@ ALU result: 0
 ID
 nop
 EX
-mem->ex forward: 12 from reg 7
-alu_input2 got: 12, is value from memory
-alu_input1: 262, alu_operand2: 12 (from register)
+alu_input1: 115, alu_operand2: 0 (from register)
 ALUOp: 2, RFunctionBits: 32
-ALU result: 274
+ALU result: 115
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
+ID
+nop
+EX
+alu_input1: 0, alu_operand2: 0 (from register)
+ALUOp: 0, RFunctionBits: 0
+ALU result: 0
 ID
 nop
 EX
@@ -769,16 +952,17 @@ alu_input1: 0, alu_operand2: 0 (from register)
 ALUOp: 0, RFunctionBits: 0
 ALU result: 0
 [DATA HAZARD] detected.
+[CONTROL HAZARD] detected.
 FINAL REGISTER VALUES
 [$00]: 0x000
-[$01]: 0x01D
-[$02]: 0x00C
-[$03]: 0x103
+[$01]: 0x000
+[$02]: 0x073
+[$03]: 0x073
 [$04]: 0x104
 [$05]: 0x105
-[$06]: 0x01D
-[$07]: 0x00C
-[$08]: 0x112
+[$06]: 0x106
+[$07]: 0x107
+[$08]: 0x108
 [$09]: 0x109
 [$10]: 0x10A
 [$11]: 0x10B

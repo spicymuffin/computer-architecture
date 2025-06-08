@@ -821,11 +821,11 @@ void MEM_Stage()
         PC = PC - 3 + static_cast<int16_t>(R_EXMEM.BranchTarget); // branch target is an offset from the current PC (not sll by 2, because we are not using byte addressing)
 
         // flush the previous pipeline registers
-        // R_IFID = IFIDReg{}; // clear the IF/ID register
+        R_IFID = IFIDReg{}; // clear the IF/ID register
         W_IFID = IFIDReg{}; // clear the IF/ID register
-        // R_IDEX = IDEXReg{}; // clear the ID/EX register
+        R_IDEX = IDEXReg{}; // clear the ID/EX register
         W_IDEX = IDEXReg{}; // clear the ID/EX register
-        // R_EXMEM = EXMEMReg{}; // clear the EX/MEM register
+        R_EXMEM = EXMEMReg{}; // clear the EX/MEM register
         W_EXMEM = EXMEMReg{}; // clear the EX/MEM register
     }
 
